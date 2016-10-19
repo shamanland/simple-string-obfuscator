@@ -1,0 +1,39 @@
+class Utils {
+    static def r = new Random(System.currentTimeMillis())
+}
+
+def String toJavaCodeString(String string) {
+    byte[] b = string.getBytes();
+    int c = b.length;
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("(new Object() {");
+    sb.append("int t;");
+    sb.append("public String toString() {");
+    sb.append("byte[] buf = new byte[");
+    sb.append(c);
+    sb.append("];");
+
+    for (int i = 0; i < c; ++i) {
+        int t = Utils.r.nextInt();
+        int f = Utils.r.nextInt(24) + 1;
+
+        t = (t & ~(0xff << f)) | (b[i] << f);
+
+        sb.append("t = ");
+        sb.append(t);
+        sb.append(";");
+        sb.append("buf[");
+        sb.append(i);
+        sb.append("] = (byte) (t >>> ");
+        sb.append(f);
+        sb.append(");");
+    }
+
+    sb.append("return new String(buf);");
+    sb.append("}}.toString())");
+
+    return sb.toString();
+}
+
+ext.toJavaCodeString = this.&toJavaCodeString
